@@ -1,0 +1,37 @@
+alias python='python3'
+alias pip='pip3'
+
+export KUBECONFIG=$(find ~/.kube -type f -name 'config*' | tr '\n' ':')
+
+# kubernetes 
+alias kfpo="kubectl get pods --no-headers | fzf | awk '{print \$1}'"
+alias kfex="kfpo | xargs -o -I % kubectl exec -it % -- sh"
+alias kflg="kfpo | xargs -o -I % kubectl logs %"
+
+function kf(){
+    eval $(python ~/kubealias.py $1) ${@:2} ;
+    # echo $(python ~/kubealias.py $1);
+}
+
+# namespace get and set
+function ksens() { kubectl config set-context --current --namespace="$1";}
+function kgens() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
+function kfsens() {
+    local current_ns=$(kgens)
+    local new_ns=$(kf gens --no-headers | fzf --header="current: $current_ns" | echo $(awk '{print $1}') )
+    ksens $new_ns
+}
+
+# context get and set
+function kfseco(){
+    local current_context=$(kubectl config current-context)
+    local context=$(kubectl config get-contexts --no-headers | fzf --header="current: $current_context" | awk '{print $1}')
+    kubectl config use-context $context
+}
+
+# if code is available, use it as the editor, else use vim
+if code -v >/dev/null 2>&1; then
+    export KUBE_EDITOR="code --wait"
+else
+    export KUBE_EDITOR="vi"
+fi
