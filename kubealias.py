@@ -13,7 +13,7 @@ subs = {
     # 'rm': 'delete',
     'ed': 'edit',
     'ru': 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t',
-    'al': 'all',
+    'ar': 'all', # all resources
     'po': 'pods',
     'dp': 'deployment',
     'st': 'statefulset',
@@ -28,7 +28,7 @@ subs = {
     'oy' : '-o=yaml',
     'ow' : '-o=wide',
     'oj' : '-o=json',
-    'al' : '--all-namespaces',
+    'an' : '--all-namespaces', # all namespaces
     'sl' : '--show-labels',
     'wa' : '--watch',
 }

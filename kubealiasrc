@@ -1,29 +1,43 @@
 alias python='python3'
 alias pip='pip3'
 
-export KUBECONFIG=$(find ~/.kube -type f -name 'config*' | tr '\n' ':')
+export KUBECONFIG=$(find ~/.kube -type f -name 'config_*' | tr '\n' ':')
 
-# kubernetes 
-alias kfpo="kubectl get pods --no-headers | fzf | awk '{print \$1}'"
-alias kfex="kfpo | xargs -o -I % kubectl exec -it % -- sh"
-alias kflg="kfpo | xargs -o -I % kubectl logs %"
+preexec() {
+    if [[ $1 == kk* ]]; then
 
-function kf(){
-    eval $(python ~/kubealias.py $1) ${@:2} ;
-    # echo $(python ~/kubealias.py $1);
+        local command="${1:2}"
+        first_element="${command%% *}"
+
+        # Extract the rest of the elements
+        if [[ "$command" == *" "* ]]; then
+            rest_elements="${command#* }"
+        else
+            rest_elements=""
+        fi
+        eval $(python ~/kubealias/kubealias.py $first_element) ${rest_elements} ;
+
+    fi
 }
+
+# La versión de arriba mola mas, pero si no se quiere usar preexec, se puede usar esta
+# function kk(){
+#     eval $(python ~/kubealias/kubealias.py $1) ${@:2} ;
+#     # echo $(python ~/kubealias.py $1);
+# }
 
 # namespace get and set
 function ksens() { kubectl config set-context --current --namespace="$1";}
 function kgens() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
-function kfsens() {
+
+function kksens() {
     local current_ns=$(kgens)
     local new_ns=$(kf gens --no-headers | fzf --header="current: $current_ns" | echo $(awk '{print $1}') )
     ksens $new_ns
 }
 
 # context get and set
-function kfseco(){
+function kkseco(){
     local current_context=$(kubectl config current-context)
     local context=$(kubectl config get-contexts --no-headers | fzf --header="current: $current_context" | awk '{print $1}')
     kubectl config use-context $context
