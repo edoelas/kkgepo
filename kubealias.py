@@ -10,7 +10,7 @@ subs = {
     'pf': 'port-forward',
     'ge': 'get',
     'de': 'describe',
-    # 'rm': 'delete',
+    'rm': 'delete',
     'ed': 'edit',
     'ru': 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t',
     'ar': 'all', # all resources
@@ -49,7 +49,11 @@ resources = [
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
-        print("echo \"Usage: kubealias.py <alias>\"")
+        help_str = "Usage:\\\\n\\\\tkubealias.py <alias1> <alias2> ... \\\\nAlias:\\\\n" # scape backslashes
+        for k, v in subs.items():
+            help_str += f"\\\\t{k} => {v}\\\\n"
+        print(f"printf \"{help_str}\"")
+
         sys.exit(1)
     
     alias = sys.argv[1]
