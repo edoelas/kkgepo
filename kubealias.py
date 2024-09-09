@@ -1,6 +1,17 @@
 import sys
 
 subs = {
+    'po': 'pods',
+    'dp': 'deployment',
+    'st': 'statefulset',
+    'sv': 'service',
+    'in': 'ingress',
+    'cm': 'configmap',
+    'se': 'secret',
+    'no': 'nodes',
+    'ns': 'namespaces',
+    'pv': 'persistentvolume',
+    'pc': 'persistentvolumeclaim',
     'af': 'apply --recursive -f',
     'ak': 'apply -k',
     'ku': 'kustomize',
@@ -14,17 +25,6 @@ subs = {
     'ed': 'edit',
     'ru': 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t',
     'ar': 'all', # all resources
-    'po': 'pods',
-    'dp': 'deployment',
-    'st': 'statefulset',
-    'sv': 'service',
-    'in': 'ingress',
-    'cm': 'configmap',
-    'se': 'secret',
-    'no': 'nodes',
-    'ns': 'namespaces',
-    'pv': 'persistentvolume',
-    'pc': 'persistentvolumeclaim',
     'oy' : '-o=yaml',
     'ow' : '-o=wide',
     'oj' : '-o=json',
@@ -51,7 +51,10 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         help_str = "Usage:\\\\n\\\\tkubealias.py <alias1> <alias2> ... \\\\nAlias:\\\\n" # scape backslashes
         for k, v in subs.items():
-            help_str += f"\\\\t{k} => {v}\\\\n"
+            if k in resources:
+                help_str += f"\\\\t{k} => {v} *\\\\n"
+            else:
+                help_str += f"\\\\t{k} => {v}\\\\n"
         print(f"printf \"{help_str}\"")
 
         sys.exit(1)
