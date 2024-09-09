@@ -52,9 +52,12 @@ if __name__ == '__main__':
         help_str = "Usage:\\\\n\\\\tkubealias.py <alias1> <alias2> ... \\\\nAlias:\\\\n" # scape backslashes
         for k, v in subs.items():
             if k in resources:
-                help_str += f"\\\\t{k} => {v} *\\\\n"
+                help_str += f"\\\\t{k} => {v}*\\\\n"
             else:
                 help_str += f"\\\\t{k} => {v}\\\\n"
+
+        help_str += f"\\\\tff => .˖✦·˳MAGIC˚.✦.˳˖ (fzf)\\\\n"
+        
         print(f"printf \"{help_str}\"")
 
         sys.exit(1)
