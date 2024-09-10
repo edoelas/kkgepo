@@ -17,7 +17,7 @@ preexec() {
         else
             rest_elements=""
         fi
-        eval $(python ~/kubealias/kubealias.py $first_element) ${rest_elements} ;
+        eval $(python ~/kkgepo/kubealias.py $first_element) ${rest_elements} ;
         return 1
     fi
 }
