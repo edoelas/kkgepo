@@ -38,15 +38,16 @@ resources = {
     'ar': 'all', # all resources
 }
 
-groups = {
-    'Resources': resources,
-    'Commands': commands,
-    'Flags': flags,
-    '.˖✦·˳MAGIC˚.✦.˳˖': {'ff': 'fzf over resources'},
-}
-
 def print_help():
-    help_str = "Usage:\\n\\tkubealias.py <alias1> <alias2> ...\\n"
+
+    groups = {
+        'Resources': resources,
+        'Commands': commands,
+        'Flags': flags,
+        '˖✦·˳MAGIC˚✦˖': {'ff': 'fzf over resources'},
+    }
+
+    help_str = "Usage:\\n\\tkubealias.py <alias1><alias2>... (do not use spaces between aliases)\\n"
 
     for k, v in groups.items():
         help_str += f"\\n{k}:\\n"
@@ -74,7 +75,7 @@ def create_command(args: list):
             command += f" $(kubectl get {subs[alias_resource]} --no-headers | fzf | awk '{{print $1}}')"
 
         else: # alias not found
-            return f"echo \"Alias not found: {a}\""
+            return f"echo \"Alias not found: '{a}'. Call the script without arguments for help.\""
 
     return command
 
