@@ -31,16 +31,17 @@ function ku(){
 }
 
 # namespace get and set
-function ksens() { kubectl config set-context --current --namespace="$1";}
-function kgens() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
+function k_set_ns() { kubectl config set-context --current --namespace="$1";}
+function k_get_ns() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
 
+# set namespace fzf
 function ksetns() {
-    local current_ns=$(kgens)
-    local new_ns=$(ku gens --no-headers | fzf --header="current: $current_ns" | echo $(awk '{print $1}') )
-    ksens $new_ns
+    local current_ns=$(k_get_ns)
+    local new_ns=$(kubectl get ns --no-headers | fzf --header="current: $current_ns" | echo $(awk '{print $1}') )
+    k_set_ns $new_ns
 }
 
-# context get and set
+# set context fzf
 function ksetco(){
     local current_context=$(kubectl config current-context)
     local context=$(kubectl config get-contexts --no-headers | fzf --header="current: $current_context" | awk '{print $1}')
