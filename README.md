@@ -2,8 +2,8 @@
 > 
 > kkgepo, the language of the devil, used to speak with k8s.
 
-kkgepo is just a bunch of dinamically generated kubectl aliases. It does not check anything, it just substitutes words. But there is more, by selling your soul now you can use `ff`, which allows you to choose a specific resource to apply your actions. 
-kkgepo is simple to use and to extend, less than 100 python lines including documentation. 
+`kkgepo` is just a bunch of dinamically generated kubectl aliases. It does not check anything, it just substitutes words. But there is more, by selling your soul now you can use `ff`, which allows you to choose a specific resource to apply your actions. 
+`kkgepo` is simple to use and to extend, less than 100 python lines including documentation. `kkgepo` also includes ksetns and ksetco to set namespace and context respectively.
 
 **Requirements**:
 - fzf
@@ -15,37 +15,43 @@ kkgepo is simple to use and to extend, less than 100 python lines including docu
 **Help**:
 ```
 Usage:
-        kubealias.py <alias1> <alias2> ... 
-Alias:
-        po => pods*
-        dp => deployment*
-        st => statefulset*
-        sv => service*
-        in => ingress*
-        cm => configmap*
-        se => secret*
-        no => nodes*
-        ns => namespaces*
-        pv => persistentvolume*
-        pc => persistentvolumeclaim*
-        af => apply --recursive -f
-        ak => apply -k
-        ku => kustomize
-        ex => exec -i -t
-        lo => logs -f
-        pr => proxy
-        pf => port-forward
+        kubealias.py <alias1> <alias2> ...
+
+Resources:
+        po => pods
+        dp => deployment
+        st => statefulset
+        sv => service
+        in => ingress
+        cm => configmap
+        se => secret
+        no => nodes
+        ns => namespaces
+        pv => persistentvolume
+        pc => persistentvolumeclaim
+        ar => all
+
+Commands:
         ge => get
         de => describe
         rm => delete
+        af => apply --recursive -f
+        ak => apply -k
+        ku => kustomize
         ed => edit
         ru => run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t
-        ar => all
+        lo => logs -f
+        ex => exec -i -t
+
+Flags:
+        al => --all
         oy => -o=yaml
         ow => -o=wide
         oj => -o=json
         an => --all-namespaces
         sl => --show-labels
         wa => --watch
-        ff => .˖✦·˳MAGIC˚.✦.˳˖ (fzf)
+
+.˖✦·˳MAGIC˚.✦.˳˖:
+        ff => fzf over resources
 ```
