@@ -34,6 +34,9 @@ resources = {
     'no': 'nodes',
     'ns': 'namespaces',
     'sa': 'serviceaccount',
+    'cr': 'clusterrole',
+    'cb': 'clusterrolebinding',
+    'rd': 'customresourcedefinition',
     'pv': 'persistentvolume',
     'pc': 'persistentvolumeclaim',
     'ar': 'all', # all resources
