@@ -15,29 +15,30 @@ commands = {
 
 flags = {
     'al': '--all',
-    'oy': '-o=yaml',
-    'ow': '-o=wide',
-    'oj': '-o=json',
     'an': '--all-namespaces',
     'sl': '--show-labels',
     'wa': '--watch',
+    'oy': '-o=yaml',
+    'ow': '-o=wide',
+    'oj': '-o=json',
 }
 
 resources = {
-    'po': 'pods',
-    'dp': 'deployment',
-    'st': 'statefulset',
-    'sv': 'service',
-    'in': 'ingress',
-    'cm': 'configmap',
-    'se': 'secret',
     'no': 'nodes',
     'ns': 'namespaces',
+    'dp': 'deployment',
+    'st': 'statefulset',
+    'po': 'pods',
+    'sv': 'service',
+    'in': 'ingress',
+    'se': 'secret',
+    'cm': 'configmap',
     'sa': 'serviceaccount',
+    'rd': 'customresourcedefinition',
     'ro': 'role',
+    'rb': 'rolebinding',
     'cr': 'clusterrole',
     'cb': 'clusterrolebinding',
-    'rd': 'customresourcedefinition',
     'pv': 'persistentvolume',
     'pc': 'persistentvolumeclaim',
     'ar': 'all', # all resources
@@ -54,7 +55,7 @@ def print_help():
     help_str = "Usage:\\n\\tkubealias.py <alias1><alias2>... (do not use spaces between aliases)\\n"
     for k, v in groups.items():
         help_str += f"\\n{k}:\\n"
-        for k, v in sorted(v.items()):
+        for k, v in v.items():
             help_str += f"\\t{k} => {v}\\n"
 
     return f"printf \"{help_str}\\n\""
