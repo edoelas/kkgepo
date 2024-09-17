@@ -53,7 +53,7 @@ def print_help():
     help_str = "Usage:\\n\\tkubealias.py <alias1><alias2>... (do not use spaces between aliases)\\n"
     for k, v in groups.items():
         help_str += f"\\n{k}:\\n"
-        for k, v in v.items():
+        for k, v in sorted(v.items()):
             help_str += f"\\t{k} => {v}\\n"
 
     return f"printf \"{help_str}\\n\""
