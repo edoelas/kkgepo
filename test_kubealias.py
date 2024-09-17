@@ -6,7 +6,6 @@ class TestKubealias(unittest.TestCase):
     pairs = {
         'gepo': 'kubectl get pods',
         'gepoanwa': 'kubectl get pods --all-namespaces --watch',
-
     }
 
     def test_upper(self):

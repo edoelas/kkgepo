@@ -33,13 +33,13 @@ resources = {
     'se': 'secret',
     'no': 'nodes',
     'ns': 'namespaces',
+    'sa': 'serviceaccount',
     'pv': 'persistentvolume',
     'pc': 'persistentvolumeclaim',
     'ar': 'all', # all resources
 }
 
 def print_help():
-
     groups = {
         'Resources': resources,
         'Commands': commands,
@@ -48,14 +48,12 @@ def print_help():
     }
 
     help_str = "Usage:\\n\\tkubealias.py <alias1><alias2>... (do not use spaces between aliases)\\n"
-
     for k, v in groups.items():
         help_str += f"\\n{k}:\\n"
         for k, v in v.items():
             help_str += f"\\t{k} => {v}\\n"
 
     return f"printf \"{help_str}\\n\""
-
 
 def create_command(args: list):
     if len(args) != 2:
