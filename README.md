@@ -5,6 +5,8 @@
 `kkgepo` is just a bunch of dinamically generated kubectl aliases. It does not check anything, it just substitutes words. But there is more, by selling your soul now you can use `ff`, which allows you to choose a specific resource to apply your actions. 
 `kkgepo` is simple to use and easy to extend, less than 100 python lines. `kkgepo` also includes ksetns and ksetco to set namespace and context respectively using fzf.
 
+Usage with zsh is advised. It works waaay better. Probably suport for bash will be droped in the future due to problems. 
+
 **Requirements**:
 - fzf
 - python

@@ -21,7 +21,7 @@ if [ -n "$BASH_VERSION" ]; then # BASH
 
 elif [ -n "$ZSH_VERSION" ]; then # ZSH
 
-    my-accept-line () { # funcion encargada de procesar el comando antes de ejecutarlo
+    kk-accept-line () { # funcion encargada de procesar el comando antes de ejecutarlo
         if [[ "$BUFFER" == "kk"* ]]; then
 
             local rest_elements=${BUFFER#*' '};  [[ "$BUFFER" == *" "* ]] || rest_elements=""; # Extract the trailing commands
@@ -29,19 +29,16 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
             command=${command%% *} # Delete trailing commands
 
             case $command in
-            "co")
-                BUFFER="ksetco";;
-            "ns")
-                BUFFER="ksetns";;
-            *)
-                BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";;
+            "co")   BUFFER="ksetco";; # set context
+            "ns")   BUFFER="ksetns";; # set namespace
+            *)      BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";; # get alias
             esac
         fi
 
         zle .accept-line # Check if line is accepeted after processing
     }
 
-    zle -N accept-line my-accept-line # Add the function to the accept-line widget
+    zle -N accept-line kk-accept-line # Add the function to the accept-line widget
 
 fi
 
