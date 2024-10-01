@@ -29,33 +29,20 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
     my-accept-line () { # funcion encargada de procesar el comando antes de ejecutarlo
         if [[ "$BUFFER" == "kk"* ]]; then
 
-            local command=${BUFFER:2}
+            local rest_elements=${BUFFER#* } # Extract the trailing commands
+            local command=${BUFFER:2} # Delete the first two characters 'kk'
+            command=${command%% *} # Delete trailing commands
 
-            if [[ "$command" == "co" ]]; then # TEST
-                BUFFER="ksetco"
-                zle .accept-line # Check if line is accepeted
-                return
-            fi
+            # external aliases
+            [[ "$command" == "co" ]] && { BUFFER="ksetco";} # change context
+            [[ "$command" == "ns" ]] && { BUFFER="ksetns";} # change namespace
 
-            if [[ "$command" == "ns" ]]; then # TEST
-                BUFFER="ksetns"
-                zle .accept-line # Check if line is accepeted
-                return
-            fi
-
-            first_element="${command%% *}" # Delete from the first space to the end of the string
-
-            # Extract the rest of the elements
-            if [[ "$command" == *" "* ]]; then
-                rest_elements="${command#* }"
-            else
-                rest_elements=""
-            fi
-
-            BUFFER="$(python ~/kkgepo/kubealias.py $first_element) ${rest_elements}"
+            # if no external aliases applied, apply kubealias
+            [[ "$BUFFER" == "kk"* ]] && { BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}" ; }
         fi
-        zle .accept-line # Check if line is accepeted
+        zle .accept-line # Check if line is accepeted after processing
     }
+
     zle -N accept-line my-accept-line # Add the function to the accept-line widget
 
 fi
