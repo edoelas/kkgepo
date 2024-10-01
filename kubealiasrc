@@ -8,16 +8,11 @@ if [ -n "$BASH_VERSION" ]; then # BASH
     preexec() {
         if [[ $1 == kk* ]]; then
 
-            local command="${1:2}"
-            first_element="${command%% *}"
+            local rest_elements=${1#*' '};  [[ "$1" == *" "* ]] || rest_elements=""; # Extract the trailing commands
+            local command=${1:2} # Delete the first two characters 'kk'
+            command=${command%% *} # Delete trailing commands
 
-            # Extract the rest of the elements
-            if [[ "$command" == *" "* ]]; then
-                rest_elements="${command#* }"
-            else
-                rest_elements=""
-            fi
-            eval $(python ~/kkgepo/kubealias.py $first_element) ${rest_elements} ;
+            eval $(python ~/kkgepo/kubealias.py $command) ${rest_elements} ;
             return 1
         fi
     }
@@ -29,17 +24,20 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
     my-accept-line () { # funcion encargada de procesar el comando antes de ejecutarlo
         if [[ "$BUFFER" == "kk"* ]]; then
 
-            local rest_elements=${BUFFER#* } # Extract the trailing commands
+            local rest_elements=${BUFFER#*' '};  [[ "$BUFFER" == *" "* ]] || rest_elements=""; # Extract the trailing commands
             local command=${BUFFER:2} # Delete the first two characters 'kk'
             command=${command%% *} # Delete trailing commands
 
-            # external aliases
-            [[ "$command" == "co" ]] && { BUFFER="ksetco";} # change context
-            [[ "$command" == "ns" ]] && { BUFFER="ksetns";} # change namespace
-
-            # if no external aliases applied, apply kubealias
-            [[ "$BUFFER" == "kk"* ]] && { BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}" ; }
+            case $command in
+            "co")
+                BUFFER="ksetco";;
+            "ns")
+                BUFFER="ksetns";;
+            *)
+                BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";;
+            esac
         fi
+
         zle .accept-line # Check if line is accepeted after processing
     }
 
