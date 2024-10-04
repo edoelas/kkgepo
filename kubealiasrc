@@ -31,6 +31,7 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
             case $command in
             "co")   BUFFER="ksetco";; # set context
             "ns")   BUFFER="ksetns";; # set namespace
+            "pf")   BUFFER="k_port_forward";; # port forward
             *)      BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";; # get alias
             esac
         fi
@@ -64,6 +65,13 @@ function ksetco(){
     local current_context=$(kubectl config current-context)
     local context=$(kubectl config get-contexts --no-headers | fzf --header="current: $current_context" | awk '{print $1}')
     kubectl config use-context $context
+}
+
+# forward port fzf
+function k_port_forward(){
+    local svc=$(kubectl get svc --no-headers | fzf | awk '{print $1}')
+    local port=$(kubectl get svc --no-headers $svc -o='jsonpath={.spec.ports}' | jq -r '(.[] | [.port, .protocol, .name]) | @tsv' | fzf | awk '{print $1}')
+    kubectl port-forward service/$svc $port:$port
 }
 
 # if code is available, use it as the editor, else use vim

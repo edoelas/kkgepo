@@ -35,6 +35,7 @@ resources = {
     'cm': 'configmap',
     'sa': 'serviceaccount',
     'rd': 'customresourcedefinition',
+    'vr': 'vulnerabilityreport',
     'ro': 'role',
     'rb': 'rolebinding',
     'cr': 'clusterrole',
