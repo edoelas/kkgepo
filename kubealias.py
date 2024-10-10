@@ -76,7 +76,7 @@ def create_command(args: list):
             
         elif a == 'ff': # fzf over resources. Default to pod.
             alias_resource = next((res for res in alias if res in resources), 'po')
-            command += f" $(kubectl get {subs[alias_resource]} --no-headers | fzf | awk '{{print $1}}')"
+            command += f" $(kubectl get {subs[alias_resource]} | fzftab | awk '{{print $1}}')"
 
         else: # alias not found
             return f"echo \"Alias not found: '{a}'. Call the script without arguments for help.\""

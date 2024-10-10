@@ -1,10 +1,12 @@
 alias python='python3'
 alias pip='pip3'
+alias fzftab="fzf --height=60% --border  --header-lines=1 --reverse --pointer '>' --color 'header:reverse'"
 
 export KUBECONFIG=$(find ~/.kube -type f -name 'config_*' | tr '\n' ':')
 
 if [ -n "$BASH_VERSION" ]; then # BASH
     
+    # bash does not work properly
     preexec() {
         if [[ $1 == kk* ]]; then
 
@@ -32,6 +34,8 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
             "co")   BUFFER="ksetco";; # set context
             "ns")   BUFFER="ksetns";; # set namespace
             "pf")   BUFFER="k_port_forward";; # port forward
+            "cd")   BUFFER="k_cd";; # cd into k8s projects
+            "he")   BUFFER="k_helmfile_sync";; # helmfile sync
             *)      BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";; # get alias
             esac
         fi
@@ -72,6 +76,18 @@ function k_port_forward(){
     local svc=$(kubectl get svc --no-headers | fzf | awk '{print $1}')
     local port=$(kubectl get svc --no-headers $svc -o='jsonpath={.spec.ports}' | jq -r '(.[] | [.port, .protocol, .name]) | @tsv' | fzf | awk '{print $1}')
     kubectl port-forward service/$svc $port:$port
+}
+
+# cd into git projects
+function k_cd(){
+    local folder=$(ls $K8S_HOME | tr ' ' '\n' | fzf)
+    cd $K8S_HOME/$folder
+}
+
+function k_helmfile_sync(){
+    local table = helmfile list || return 1
+    local release=$(helmfile list | fzftab | awk '{print $1}')
+    helmfile sync -l name=$release
 }
 
 # if code is available, use it as the editor, else use vim
