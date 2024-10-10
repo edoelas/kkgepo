@@ -37,6 +37,7 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
             "pf")   BUFFER="k_port_forward";; # port forward
             "cd")   BUFFER="k_cd";; # cd into k8s projects
             "he")   BUFFER="k_helmfile_sync";; # helmfile sync
+            "lo")   BUFFER="k_logs";; # logs
             *)      BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";; # get alias
             esac
         fi
@@ -85,6 +86,7 @@ function k_cd(){
     cd $K8S_HOME/$folder
 }
 
+# helmfile sync
 function k_helmfile_sync(){
     if ! helmfile status 2>&1; then
         return 1
@@ -92,6 +94,20 @@ function k_helmfile_sync(){
     local release=$(helmfile list | fzftab | awk '{print $1}')
     helmfile sync -l name=$release
 }
+
+# see nice logs with fzf, bat and yq
+function format_log(){
+    echo $1 | yq -P | bat --color=always --style=numbers --line-range=:500 --language yaml
+}
+
+function k_logs(){
+    # Add case when it is not json
+    local pod=$(kubectl get pods | fzftab | awk '{print $1}')
+    kubectl logs $pod | fzf --ansi --tail 100000 --tac --no-sort --exact --wrap --highlight-line \
+    --preview 'echo {} | yq -P | bat --color=always --style=numbers --line-range=:500 --language yaml' \
+    --preview-window=bottom:20:wrap
+}
+
 
 # if code is available, use it as the editor, else use vim
 if code -v >/dev/null 2>&1; then
