@@ -1,6 +1,7 @@
 alias python='python3'
 alias pip='pip3'
-alias fzftab="fzf --height=60% --border  --header-lines=1 --reverse --pointer '>' --color 'header:reverse'"
+alias fzflist="fzf --height=13 --border --reverse --pointer '>' "
+alias fzftab="fzflist --header-lines=1 --color 'header:reverse'"
 
 export KUBECONFIG=$(find ~/.kube -type f -name 'config_*' | tr '\n' ':')
 
@@ -60,14 +61,14 @@ function k_get_ns() { kubectl config view --minify --output 'jsonpath={..namespa
 # set namespace fzf
 function ksetns() {
     local current_ns=$(k_get_ns)
-    local new_ns=$(kubectl get ns --no-headers | fzf --header="current: $current_ns" | awk '{print $1}' )
+    local new_ns=$(kubectl get ns --no-headers | fzflist --header="current: $current_ns" | awk '{print $1}' )
     k_set_ns $new_ns
 }
 
 # set context fzf
 function ksetco(){
     local current_context=$(kubectl config current-context)
-    local context=$(kubectl config get-contexts --no-headers | fzf --header="current: $current_context" | awk '{print $1}')
+    local context=$(kubectl config get-contexts --no-headers | fzflist --header="current: $current_context" | awk '{print $1}')
     kubectl config use-context $context
 }
 
@@ -80,12 +81,14 @@ function k_port_forward(){
 
 # cd into git projects
 function k_cd(){
-    local folder=$(ls $K8S_HOME | tr ' ' '\n' | fzf)
+    local folder=$(ls $K8S_HOME | tr ' ' '\n' | fzflist)
     cd $K8S_HOME/$folder
 }
 
 function k_helmfile_sync(){
-    local table = helmfile list || return 1
+    if ! helmfile status 2>&1; then
+        return 1
+    fi
     local release=$(helmfile list | fzftab | awk '{print $1}')
     helmfile sync -l name=$release
 }
