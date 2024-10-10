@@ -74,9 +74,9 @@ function ksetco(){
 
 # forward port fzf
 function k_port_forward(){
-    local svc=$(kubectl get svc --no-headers | fzf | awk '{print $1}')
-    local port=$(kubectl get svc --no-headers $svc -o='jsonpath={.spec.ports}' | jq -r '(.[] | [.port, .protocol, .name]) | @tsv' | fzf | awk '{print $1}')
-    kubectl port-forward service/$svc $port:$port
+    local svc=$(kubectl get svc | fzftab | awk '{print $1}')
+    local origin_port=$(kubectl get svc --no-headers $svc -o='jsonpath={.spec.ports}' | jq -r '(.[] | [.port, .protocol, .name]) | @tsv' | fzflist --select-1 | awk '{print $1}')
+    kubectl port-forward service/$svc :$origin_port
 }
 
 # cd into git projects
