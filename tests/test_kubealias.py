@@ -1,5 +1,5 @@
 import unittest
-import kubealias
+import kkgepo.kubealias as kubealias
 
 class TestKubealias(unittest.TestCase):
 
