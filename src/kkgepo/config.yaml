@@ -1,0 +1,69 @@
+resources:
+  po: 
+    value: pod
+    columns:
+      - title: Name
+        path: r.metadata.name
+      # - title: Namespace
+      #   path: $.metadata.namespace
+      # # - title: Ready
+      # #   path: $.{range .items[*]}{.metadata.name}
+      # - title: Status
+      #   path: $.status.phase
+      # - title: Restarts
+      #   path: $.status.containerStatuses[0].restartCount
+      # - title: Age
+      #   path: $.metadata.creationTimestamp
+  dp:
+    value: deployment
+    columns:
+      - path: $.metadata.namespace
+        title: Namespace
+      - path: $.metadata.name
+        title: Name
+
+
+# commands = {
+#     'ge': 'get',
+#     'de': 'describe',
+#     'rm': 'delete',
+#     'af': 'apply --recursive -f',
+#     'ak': 'apply -k',
+#     'ku': 'kustomize',
+#     'ed': 'edit',
+#     'ru': 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t',
+#     'lo': 'logs -f',
+#     'ex': 'exec -i -t',
+# }
+
+# flags = {
+#     'al': '--all',
+#     'an': '--all-namespaces',
+#     'sl': '--show-labels',
+#     'wa': '--watch',
+#     'oy': '-o=yaml',
+#     'ow': '-o=wide',
+#     'oj': '-o=json',
+# }
+
+# resources = {
+#     'no': 'nodes',
+#     'ns': 'namespaces',
+#     'dp': 'deployment',
+#     'st': 'statefulset',
+#     'po': 'pods',
+#     'sv': 'service',
+#     'in': 'ingress',
+#     'se': 'secret',
+#     'cm': 'configmap',
+#     'sa': 'serviceaccount',
+#     'rd': 'customresourcedefinition',
+#     'vr': 'vulnerabilityreport',
+#     'ro': 'role',
+#     'rb': 'rolebinding',
+#     'cr': 'clusterrole',
+#     'cb': 'clusterrolebinding',
+#     'pv': 'persistentvolume',
+#     'pc': 'persistentvolumeclaim',
+#     'ar': 'all', # all resources
+# }

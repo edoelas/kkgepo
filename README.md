@@ -57,3 +57,10 @@ Flags:
 .˖✦·˳MAGIC˚.✦.˳˖:
         ff => fzf over resources
 ```
+
+
+<!-- 
+typer --show-completion zsh ./src/kkgepo/main.py run > completions
+source completions
+typer ./src/kkgepo/main.py run --name Camila
+ -->

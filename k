@@ -1,0 +1,1 @@
+typer ./src/kkgepo/main.py run $1

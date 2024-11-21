@@ -5,7 +5,14 @@ description = "Add your description here"
 authors = [
     { name = "edoelas", email = "miego.cvcv@gmail.com" }
 ]
-dependencies = []
+dependencies = [
+    "iterfzf>=1.4.0.54.3",
+    "kr8s>=0.18.1",
+    "typer>=0.13.1",
+    "ipython>=8.29.0",
+    "pyyaml>=6.0.2",
+    "jsonpath-ng>=1.7.0",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
