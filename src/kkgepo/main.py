@@ -1,4 +1,6 @@
 import typer
+
+from typing import Annotated
 import kr8s
 import os
 import yaml
@@ -6,6 +8,30 @@ from jsonpath_ng import parse
 from iterfzf import iterfzf
 from rich import print as rprint
 from rich import inspect
+from datetime import datetime
+# from . import helpers as he
+
+
+# 
+# Helpers 
+# 
+# # TODO: no se puede importar helpers desde main.py
+
+
+def time_passed(time: str) -> str:
+    time =  datetime.strptime(time, '%Y-%m-%dT%H:%M:%SZ')
+    delta = datetime.now() - time
+    if delta.days:
+        return f"{delta.days} d"
+    elif delta.seconds // 3600:
+        return f"{delta.seconds // 3600} h"
+    elif delta.seconds // 60:
+        return f"{delta.seconds // 60} m "
+    else:
+        return f"{delta.seconds} s"
+    
+
+
 
 def load_config(path: str) -> dict:
     with open(path) as stream:
@@ -13,6 +39,9 @@ def load_config(path: str) -> dict:
             return yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
+
+def get_config(config = load_config("./src/kkgepo/config.yaml")):
+    return config
 
 def dealias(alias: str, config) -> dict[str, list[str]]:
     aliases = config['resources'].keys()
@@ -41,15 +70,11 @@ def run_command(client, config, resources: list[str], commands: list[str], flags
         resource_name = config['resources'][resource_alias]['value']
         table = config['resources'][resource_alias]['columns']
         column_titles = [col['title'] for col in table]
-        # col_exprs = [parse(col['path']) for col in table] 
         col_exprs = [col['path'] for col in table] 
-
         # to_dict returns Box object: https://github.com/cdgriffith/Box/wiki/Converters#dictionary
         resources = [resource for resource in client.get(resource_name, namespace='traefik')]
-        inspect(resources[0].to_dict().to_dict())
-        print(col_exprs)
-        rows = [[str(eval(expr, {'r': resource} )) for expr in col_exprs] for resource in resources]
-        # rows = [[str(col.find(resource)[0].value) for col in col_paths] for resource in resources]
+        # inspect(resources[0].to_dict().to_dict())
+        rows = [[str(eval(expr, {'r': resource} | globals() )) for expr in col_exprs] for resource in resources]
 
         return [column_titles] + rows
 
@@ -61,38 +86,24 @@ def str_to_table(data: list[list[str]]) -> list[str]:
         data[i] = "   ".join(data[i])
     return data
     
-# valid_completion_items = [
-#     ("Camila", "The reader of books."),
-#     ("Carlos", "The writer of scripts."),
-#     ("Sebastian", "The type hints guy."),
-# ]
 
-# usado para el autocompletado de recursos
-# def complete_name(incomplete: str):
-#     completion = []
-#     for name, help_text in valid_completion_items:
-#         if name.startswith(incomplete):
-#             completion_item = (name, help_text)
-#             completion.append(completion_item)
-#     return completion
+
+def complete_name(incomplete: str):
+    config = get_config()
+    completion = [ (alias, config['resources'][alias]['value']) for alias in config['resources'] if alias.startswith(incomplete) ]
+    return completion
 
 
 app = typer.Typer()
 @app.command()
-# def main(
-#     name: Annotated[
-#         str, typer.Option(help="The name to say hi to.", autocompletion=complete_name)
-#     ] = "World",
-# ):
-def main( command):
+def main(command: Annotated[ str, typer.Option(autocompletion=complete_name) ]):
     client = kr8s.api(kubeconfig=os.environ.get('KUBECONFIG'))
-    config = load_config("./src/kkgepo/config.yaml")
-    print(config)
+    config = get_config()
     command = dealias(command, config)
     data = run_command(client, config, **command)
     table = str_to_table(data)
-    selected = iterfzf(table, sort=False,__extra__= ['--height=13','--border', '--reverse', '--prompt=$ ', '--pointer=>', '--header-lines=1', '--color', 'header:reverse'])
-    print(selected)
+    # selected = iterfzf(table, sort=False,__extra__= ['--height=13','--border', '--reverse', '--prompt=$ ', '--pointer=>', '--header-lines=1', '--color', 'header:reverse'])
+    # print(selected)
 
 
 if __name__ == "__main__":

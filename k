@@ -1,1 +1,1 @@
-typer ./src/kkgepo/main.py run $1
+typer ./src/kkgepo/main.py run --command $1

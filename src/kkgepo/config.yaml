@@ -4,16 +4,21 @@ resources:
     columns:
       - title: Name
         path: r.metadata.name
-      # - title: Namespace
-      #   path: $.metadata.namespace
-      # # - title: Ready
-      # #   path: $.{range .items[*]}{.metadata.name}
-      # - title: Status
-      #   path: $.status.phase
-      # - title: Restarts
-      #   path: $.status.containerStatuses[0].restartCount
-      # - title: Age
-      #   path: $.metadata.creationTimestamp
+      - title: Namespace
+        path: r.metadata.namespace
+      # - title: Ready
+      #   path: $.{range .items[*]}{.metadata.name}
+      - title: Status
+        path: r.status.phase
+      - title: Restarts
+        path: r.status.containerStatuses[0].restartCount
+      - title: IP
+        path: r.status.podIP
+      - title: Age
+        path: time_passed(r.metadata.creationTimestamp)
+    commands:
+      - 'de'
+      - 'lo'
   dp:
     value: deployment
     columns:
@@ -21,6 +26,9 @@ resources:
         title: Namespace
       - path: $.metadata.name
         title: Name
+    commands:
+      - 'de'
+      - 'lo'
 
 
 # commands = {
@@ -43,7 +51,6 @@ resources:
 #     'wa': '--watch',
 #     'oy': '-o=yaml',
 #     'ow': '-o=wide',
-#     'oj': '-o=json',
 # }
 
 # resources = {
