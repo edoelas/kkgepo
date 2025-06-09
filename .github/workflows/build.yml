@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -22,7 +22,7 @@ jobs:
           uv pip compile pyproject.toml > requirements.txt
           pex -r requirements.txt -o kk.pex --exe main.py
       - name: Upload kk.pex
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kk-pex
           path: kk.pex
