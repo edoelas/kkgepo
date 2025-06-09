@@ -27,6 +27,10 @@ The tool now requires the `KKGEPO_ALIASES` environment variable to point
 at the YAML file containing all the alias definitions.  If the variable is
 missing, `kkgepo` will print an error message and load no aliases.
 
+The optional `FZFTAB_CMD` environment variable allows overriding the command
+used by the special `ff` alias. If unset, a default `fzf` invocation is used so
+`kk.pex` works even when the helper aliases from `kubealiasrc` are not loaded.
+
 ## Project layout
 
 ```

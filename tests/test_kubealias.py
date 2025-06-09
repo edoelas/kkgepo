@@ -58,7 +58,10 @@ class TestKubealias(unittest.TestCase):
     def test_ff_alias_builds_fzf_command(self) -> None:
         """The special ``ff`` alias should inject the fzf command snippet."""
         result = main.create_command(["prog", "geffpo"])
-        snippet = "$(kubectl get pods | fzftab | awk '{print $1}')"
+        snippet = (
+            "$(kubectl get pods | fzf --height=13 --border --reverse --pointer '>' "
+            "--header-lines=1 --color 'header:reverse' | awk '{print $1}')"
+        )
         self.assertIn(snippet, result)
         self.assertTrue(result.startswith("kubectl get "))
         self.assertTrue(result.endswith(" pods"))
