@@ -14,6 +14,10 @@ Usage with zsh is advised. It works waaay better. Probably support for bash will
 
 **Installation**: `source ~/kkgepo/kubealiasrc`
 
+By default the tool loads its aliases from the `aliases.yaml` file next to
+`main.py`. This path can be overridden by setting the `KKGEPO_ALIASES`
+environment variable to point at a different YAML file.
+
 **Managing dependencies**:
 This project uses [uv](https://github.com/astral-sh/uv) for dependency
 management. After installing `uv`, create a virtual environment and install

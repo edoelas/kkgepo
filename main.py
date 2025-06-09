@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 
@@ -6,7 +7,8 @@ try:
 except Exception:  # PyYAML not available
     from src.yaml_fallback import safe_load
 
-ALIASES_FILE = Path(__file__).with_name("aliases.yaml")
+_aliases_env = os.environ.get("KKGEPO_ALIASES")
+ALIASES_FILE = Path(_aliases_env).expanduser() if _aliases_env else Path(__file__).with_name("aliases.yaml")
 
 try:
     with open(ALIASES_FILE, "r") as f:

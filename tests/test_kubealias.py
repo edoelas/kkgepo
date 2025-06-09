@@ -9,6 +9,9 @@ ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
+# Ensure tests use the repository's aliases file
+os.environ["KKGEPO_ALIASES"] = os.path.join(ROOT_DIR, "aliases.yaml")
+
 import main
 
 
@@ -59,6 +62,25 @@ class TestKubealias(unittest.TestCase):
         self.assertIn(snippet, result)
         self.assertTrue(result.startswith("kubectl get "))
         self.assertTrue(result.endswith(" pods"))
+
+    def test_aliases_loaded_from_env_variable(self) -> None:
+        """Module should load aliases from the path specified in ``KKGEPO_ALIASES``."""
+        import importlib
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
+            tmp.write("commands:\n  xx: foo\n")
+            temp_path = tmp.name
+
+        try:
+            os.environ["KKGEPO_ALIASES"] = temp_path
+            importlib.reload(main)
+            self.assertEqual(main.create_command(["prog", "xx"]), "kubectl foo")
+        finally:
+            os.environ.pop("KKGEPO_ALIASES", None)
+            importlib.reload(main)
+            Path(temp_path).unlink()
 
 
 if __name__ == "__main__":
