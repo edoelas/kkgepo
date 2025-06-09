@@ -67,13 +67,19 @@ def create_command(args: list):
 
     subs = {**commands, **flags, **resources}
     command: str = 'kubectl'
+    fzftab_cmd = os.environ.get(
+        "FZFTAB_CMD",
+        "fzf --height=13 --border --reverse --pointer '>' --header-lines=1 --color 'header:reverse'",
+    )
     for a in alias:
-        if a in subs: # adds command, flag, or resource to shell command
+        if a in subs:  # adds command, flag, or resource to shell command
             command += f" {subs[a]}"
-            
-        elif a == 'ff': # fzf over resources. Default to pod.
+
+        elif a == 'ff':  # fzf over resources. Default to pod.
             alias_resource = next((res for res in alias if res in resources), 'po')
-            command += f" $(kubectl get {subs[alias_resource]} | fzftab | awk '{{print $1}}')"
+            command += (
+                f" $(kubectl get {subs[alias_resource]} | {fzftab_cmd} | awk '{{print $1}}')"
+            )
 
         else: # alias not found
             return f"echo \"Alias not found: '{a}'. Call the script without arguments for help.\""
