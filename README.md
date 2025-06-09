@@ -12,11 +12,44 @@ Usage with zsh is advised. It works waaay better. Probably support for bash will
 - python
 - https://github.com/rcaloras/bash-preexec/blob/master/bash-preexec.sh
 
-**Installation**: `source ~/kkgepo/kubealiasrc`
+## Installation
+
+Clone the repository and source `kubealiasrc` in your shell configuration:
+
+```bash
+git clone https://github.com/edoelas/kkgepo.git ~/kkgepo
+source ~/kkgepo/kubealiasrc
+```
 
 By default the tool loads its aliases from the `aliases.yaml` file next to
 `main.py`. This path can be overridden by setting the `KKGEPO_ALIASES`
 environment variable to point at a different YAML file.
+
+## Project layout
+
+```
+kkgepo/
+├── main.py           # command line interface
+├── aliases.yaml      # default alias definitions
+├── kubealiasrc       # shell helper functions
+├── build.sh          # build script producing kk.pex
+├── src/              # library modules (e.g. yaml_fallback)
+└── tests/            # unit tests
+```
+
+`build.sh` compiles dependencies using `uv`, packages the project into a
+stand‑alone `pex` archive (`kk.pex`) and runs it with the default aliases.
+
+### Building
+
+Run the provided script to create the executable archive:
+
+```bash
+./build.sh
+```
+
+The resulting `kk.pex` can be executed directly or copied somewhere on your
+`$PATH`.
 
 **Managing dependencies**:
 This project uses [uv](https://github.com/astral-sh/uv) for dependency
