@@ -3,16 +3,18 @@
 > kkgepo, the language of evil, used to speak with k8s.
 
 `kkgepo` is just a bunch of dynamically generated kubectl aliases. It does not check anything, it just substitutes words. But there is more, by selling your soul now you can use `ff`, which allows you to choose a specific resource to apply your actions.
-`kkgepo` is simple to use and easy to extend, less than 100 python lines. `kkgepo` also includes ksetns and ksetco to set namespace and context respectively using fzf.
+`kkgepo` is simple to use and easy to extend, ~~less than 100 python lines.~~ `kkgepo` also includes ksetns and ksetco to set namespace and context respectively using fzf.
 
 Usage with zsh is advised. It works waaay better. Probably support for bash will be dropped in the future due to problems.
 
 **Requirements**:
 - fzf
-- python
+- kubectl
 - https://github.com/rcaloras/bash-preexec/blob/master/bash-preexec.sh
 
 ## Installation
+
+kk.pex is a standalone executable that generates the strings needed to exec 
 
 Clone the repository and source `kubealiasrc` in your shell configuration:
 
