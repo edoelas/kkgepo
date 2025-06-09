@@ -31,8 +31,6 @@ def time_passed(time: str) -> str:
         return f"{delta.seconds} s"
     
 
-
-
 def load_config(path: str) -> dict:
     with open(path) as stream:
         try:
@@ -61,29 +59,30 @@ def dealias(alias: str, config) -> dict[str, list[str]]:
         'resources': [r for r in components if r in config['resources']],
     }
 
+def get_table(resource_alias, client):
+    config = get_config()
+    resource_name = config['resources'][resource_alias]['value'] # get real name
+    table = config['resources'][resource_alias]['columns'] 
+    column_titles = [col['title'] for col in table]
+    col_exprs = [col['path'] for col in table] 
+    # to_dict returns Box object: https://github.com/cdgriffith/Box/wiki/Converters#dictionary
+    resources = [resource for resource in client.get(resource_name, namespace='traefik')] # get resources
+    # inspect(resources[0].to_dict().to_dict())
+    rows = [[str(eval(expr, {'r': resource} | globals() )) for expr in col_exprs] for resource in resources] # get column values
+    return [column_titles] + rows
 
 def run_command(client, config, resources: list[str], commands: list[str], flags: list[str]) -> list[str]:
     if not resources:
         raise ValueError("No resources provided")
     if not commands:
-        resource_alias = resources[0]
-        resource_name = config['resources'][resource_alias]['value']
-        table = config['resources'][resource_alias]['columns']
-        column_titles = [col['title'] for col in table]
-        col_exprs = [col['path'] for col in table] 
-        # to_dict returns Box object: https://github.com/cdgriffith/Box/wiki/Converters#dictionary
-        resources = [resource for resource in client.get(resource_name, namespace='traefik')]
-        # inspect(resources[0].to_dict().to_dict())
-        rows = [[str(eval(expr, {'r': resource} | globals() )) for expr in col_exprs] for resource in resources]
+        return get_table(resources[0], client)
 
-        return [column_titles] + rows
-
-
-def str_to_table(data: list[list[str]]) -> list[str]:
+def table_to_rows(data: list[list[str]]) -> list[str]:
     col_lengths = [max(len(row[i]) for row in data) for i in range(len(data[0]))]
     for i, row in enumerate(data):
         data[i] = [f"{cell:<{col_lengths[j]}}" for j, cell in enumerate(row)]
         data[i] = "   ".join(data[i])
+    data[0] = data[0].upper() # Upper case for headers
     return data
     
 
@@ -101,7 +100,9 @@ def main(command: Annotated[ str, typer.Option(autocompletion=complete_name) ]):
     config = get_config()
     command = dealias(command, config)
     data = run_command(client, config, **command)
-    table = str_to_table(data)
+    table = table_to_rows(data)
+    for row in table:
+        print(row)
     # selected = iterfzf(table, sort=False,__extra__= ['--height=13','--border', '--reverse', '--prompt=$ ', '--pointer=>', '--header-lines=1', '--color', 'header:reverse'])
     # print(selected)
 
