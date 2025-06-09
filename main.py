@@ -8,13 +8,17 @@ except Exception:  # PyYAML not available
     from src.yaml_fallback import safe_load
 
 _aliases_env = os.environ.get("KKGEPO_ALIASES")
-ALIASES_FILE = Path(_aliases_env).expanduser() if _aliases_env else Path(__file__).with_name("aliases.yaml")
-
-try:
-    with open(ALIASES_FILE, "r") as f:
-        _ALIASES = safe_load(f)
-except FileNotFoundError:
+if not _aliases_env:
+    print("KKGEPO_ALIASES environment variable is not set", file=sys.stderr)
     _ALIASES = {"commands": {}, "flags": {}, "resources": {}}
+else:
+    ALIASES_FILE = Path(_aliases_env).expanduser()
+    try:
+        with open(ALIASES_FILE, "r") as f:
+            _ALIASES = safe_load(f)
+    except FileNotFoundError:
+        print(f"Alias file not found: {ALIASES_FILE}", file=sys.stderr)
+        _ALIASES = {"commands": {}, "flags": {}, "resources": {}}
 
 commands = _ALIASES.get("commands", {})
 

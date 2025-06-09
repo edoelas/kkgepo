@@ -78,9 +78,23 @@ class TestKubealias(unittest.TestCase):
             importlib.reload(main)
             self.assertEqual(main.create_command(["prog", "xx"]), "kubectl foo")
         finally:
-            os.environ.pop("KKGEPO_ALIASES", None)
+            os.environ["KKGEPO_ALIASES"] = os.path.join(ROOT_DIR, "aliases.yaml")
             importlib.reload(main)
             Path(temp_path).unlink()
+
+    def test_error_when_env_var_missing(self) -> None:
+        """Reloading the module without ``KKGEPO_ALIASES`` prints an error."""
+        import importlib
+        from io import StringIO
+        import contextlib
+
+        os.environ.pop("KKGEPO_ALIASES", None)
+        stderr = StringIO()
+        with contextlib.redirect_stderr(stderr):
+            importlib.reload(main)
+        self.assertIn("KKGEPO_ALIASES", stderr.getvalue())
+        os.environ["KKGEPO_ALIASES"] = os.path.join(ROOT_DIR, "aliases.yaml")
+        importlib.reload(main)
 
 
 if __name__ == "__main__":

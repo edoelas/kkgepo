@@ -21,9 +21,9 @@ git clone https://github.com/edoelas/kkgepo.git ~/kkgepo
 source ~/kkgepo/kubealiasrc
 ```
 
-By default the tool loads its aliases from the `aliases.yaml` file next to
-`main.py`. This path can be overridden by setting the `KKGEPO_ALIASES`
-environment variable to point at a different YAML file.
+The tool now requires the `KKGEPO_ALIASES` environment variable to point
+at the YAML file containing all the alias definitions.  If the variable is
+missing, `kkgepo` will print an error message and load no aliases.
 
 ## Project layout
 
