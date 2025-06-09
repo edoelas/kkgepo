@@ -96,6 +96,24 @@ class TestKubealias(unittest.TestCase):
         os.environ["KKGEPO_ALIASES"] = os.path.join(ROOT_DIR, "aliases.yaml")
         importlib.reload(main)
 
+    def test_main_executes_command(self) -> None:
+        """``main.main`` should execute the generated command by default."""
+        from unittest import mock
+
+        with mock.patch("subprocess.run") as run_mock:
+            main.main(["prog", "gepo"])
+            run_mock.assert_called_once_with("kubectl get pods", shell=True, check=False)
+
+    def test_main_print_flag(self) -> None:
+        """When ``--print`` is provided the command is printed only."""
+        from io import StringIO
+        from unittest import mock
+        out = StringIO()
+        with mock.patch("subprocess.run") as run_mock, mock.patch("sys.stdout", out):
+            main.main(["prog", "--print", "gepo"])
+            run_mock.assert_not_called()
+        self.assertEqual(out.getvalue().strip(), "kubectl get pods")
+
 
 if __name__ == "__main__":
     unittest.main()
