@@ -98,6 +98,7 @@ def main(argv: list[str] | None = None) -> None:
     if print_only:
         print(cmd)
     else:
+        print(cmd)
         subprocess.run(cmd, shell=True, check=False)
 
 if __name__ == '__main__':
