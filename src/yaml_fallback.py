@@ -1,5 +1,15 @@
 """Minimal YAML parser implementing a subset of PyYAML's API."""
 
+def _strip_quotes(value: str) -> str:
+    """Remove surrounding single or double quotes from a string."""
+    if (
+        (value.startswith("'") and value.endswith("'"))
+        or (value.startswith('"') and value.endswith('"'))
+    ):
+        return value[1:-1]
+    return value
+
+
 def safe_load(stream):
     if hasattr(stream, "read"):
         content = stream.read()
@@ -17,5 +27,7 @@ def safe_load(stream):
             result[current] = {}
         else:
             key, value = line.strip().split(":", 1)
-            result[current][key.strip()] = value.strip().strip('"')
+            key = _strip_quotes(key.strip())
+            value = _strip_quotes(value.strip())
+            result[current][key] = value
     return result

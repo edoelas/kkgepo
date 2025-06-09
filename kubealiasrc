@@ -15,7 +15,7 @@ if [ -n "$BASH_VERSION" ]; then # BASH
             local command=${1:2} # Delete the first two characters 'kk'
             command=${command%% *} # Delete trailing commands
 
-            eval $(python ~/kkgepo/kubealias.py $command) ${rest_elements} ;
+            eval $(python ~/kkgepo/main.py $command) ${rest_elements} ;
             return 1
         fi
     }
@@ -38,7 +38,7 @@ elif [ -n "$ZSH_VERSION" ]; then # ZSH
             "cd")   BUFFER="k_cd";; # cd into k8s projects
             "he")   BUFFER="k_helmfile_sync";; # helmfile sync
             "lo")   BUFFER="k_logs";; # logs
-            *)      BUFFER="$(python ~/kkgepo/kubealias.py $command) ${rest_elements}";; # get alias
+            *)      BUFFER="$(python ~/kkgepo/main.py $command) ${rest_elements}";; # get alias
             esac
         fi
 
@@ -51,8 +51,8 @@ fi
 
 # La versión de arriba mola mas, pero si no se quiere usar preexec, se puede usar esta
 function ku(){
-    eval $(python ~/kkgepo/kubealias.py $1) ${@:2} ;
-    # echo $(python ~/kubealias.py $1);
+    eval $(python ~/kkgepo/main.py $1) ${@:2} ;
+    # echo $(python ~/main.py $1);
 }
 
 # namespace get and set

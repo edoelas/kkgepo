@@ -4,7 +4,7 @@ from pathlib import Path
 try:
     from yaml import safe_load
 except Exception:  # PyYAML not available
-    from yaml_fallback import safe_load
+    from src.yaml_fallback import safe_load
 
 ALIASES_FILE = Path(__file__).with_name("aliases.yaml")
 
@@ -28,7 +28,7 @@ def print_help():
         '˖✦·˳MAGIC˚✦˖': {'ff': 'fzf over resources'},
     }
 
-    help_str = "Usage:\\n\\tkubealias.py <alias1><alias2>... (do not use spaces between aliases)\\n"
+    help_str = "Usage:\\n\\tmain.py <alias1><alias2>... (do not use spaces between aliases)\\n"
     for k, v in groups.items():
         help_str += f"\\n{k}:\\n"
         for k, v in v.items():
