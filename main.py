@@ -1,6 +1,7 @@
 import os
 import sys
 from pathlib import Path
+import subprocess
 
 try:
     from yaml import safe_load
@@ -79,5 +80,25 @@ def create_command(args: list):
 
     return command
 
+
+def main(argv: list[str] | None = None) -> None:
+    """Execute or print the command generated from ``argv``.
+
+    The optional ``--print``/``-p`` flag causes the command to be printed
+    instead of executed.
+    """
+
+    argv = argv or sys.argv
+    print_only = False
+    if len(argv) > 1 and argv[1] in ("--print", "-p"):
+        print_only = True
+        argv = [argv[0]] + argv[2:]
+
+    cmd = create_command(argv)
+    if print_only:
+        print(cmd)
+    else:
+        subprocess.run(cmd, shell=True, check=False)
+
 if __name__ == '__main__':
-    print(create_command(sys.argv))
+    main()
