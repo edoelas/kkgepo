@@ -10,5 +10,7 @@ develop = [
     "pytest>=7.0",
 ]
 
-[tool.uv]
-virtualenvs.in-project = true
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
