@@ -1,49 +1,24 @@
 import sys
+from pathlib import Path
 
-commands = {
-    'ge': 'get',
-    'de': 'describe',
-    'rm': 'delete',
-    'af': 'apply --recursive -f',
-    'ak': 'apply -k',
-    'ku': 'kustomize',
-    'ed': 'edit',
-    'ru': 'run --rm --restart=Never --image-pull-policy=IfNotPresent -i -t',
-    'lo': 'logs -f',
-    'ex': 'exec -i -t',
-}
+try:
+    from yaml import safe_load
+except Exception:  # PyYAML not available
+    from yaml_fallback import safe_load
 
-flags = {
-    'al': '--all',
-    'an': '--all-namespaces',
-    'sl': '--show-labels',
-    'wa': '--watch',
-    'oy': '-o=yaml',
-    'ow': '-o=wide',
-    'oj': '-o=json',
-}
+ALIASES_FILE = Path(__file__).with_name("aliases.yaml")
 
-resources = {
-    'no': 'nodes',
-    'ns': 'namespaces',
-    'dp': 'deployment',
-    'st': 'statefulset',
-    'po': 'pods',
-    'sv': 'service',
-    'in': 'ingress',
-    'se': 'secret',
-    'cm': 'configmap',
-    'sa': 'serviceaccount',
-    'rd': 'customresourcedefinition',
-    'vr': 'vulnerabilityreport',
-    'ro': 'role',
-    'rb': 'rolebinding',
-    'cr': 'clusterrole',
-    'cb': 'clusterrolebinding',
-    'pv': 'persistentvolume',
-    'pc': 'persistentvolumeclaim',
-    'ar': 'all', # all resources
-}
+try:
+    with open(ALIASES_FILE, "r") as f:
+        _ALIASES = safe_load(f)
+except FileNotFoundError:
+    _ALIASES = {"commands": {}, "flags": {}, "resources": {}}
+
+commands = _ALIASES.get("commands", {})
+
+flags = _ALIASES.get("flags", {})
+
+resources = _ALIASES.get("resources", {})
 
 def print_help():
     groups = {
