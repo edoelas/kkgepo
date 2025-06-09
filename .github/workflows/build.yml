@@ -3,6 +3,7 @@ name: Build kk.pex
 on:
   push:
     branches: [main]
+    tags: ['v*']
   workflow_dispatch:
 
 jobs:
@@ -26,3 +27,14 @@ jobs:
         with:
           name: kk-pex
           path: kk.pex
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: kk-pex
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: kk.pex
