@@ -27,7 +27,7 @@ uv pip install -e ".[develop]"
 **Help**:
 ```
 Usage:
-        kubealias.py <alias1> <alias2> ...
+        main.py <alias1> <alias2> ...
 
 Resources:
         po => pods
