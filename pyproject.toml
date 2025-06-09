@@ -1,0 +1,14 @@
+[project]
+name = "kkgepo"
+version = "0.1.0"
+requires-python = ">=3.8"
+# No external runtime dependencies
+dependencies = []
+
+[project.optional-dependencies]
+develop = [
+    "pytest>=7.0",
+]
+
+[tool.uv]
+virtualenvs.in-project = true

@@ -14,6 +14,16 @@ Usage with zsh is advised. It works waaay better. Probably support for bash will
 
 **Installation**: `source ~/kkgepo/kubealiasrc`
 
+**Managing dependencies**:
+This project uses [uv](https://github.com/astral-sh/uv) for dependency
+management. After installing `uv`, create a virtual environment and install
+the development requirements:
+
+```bash
+uv venv
+uv pip install -e ".[develop]"
+```
+
 **Help**:
 ```
 Usage:
