@@ -53,6 +53,7 @@ develop = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pex" },
     { name = "pytest", version = "8.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pytest", version = "8.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
@@ -65,7 +66,10 @@ requires-dist = [
 provides-extras = ["develop"]
 
 [package.metadata.requires-dev]
-dev = [{ name = "pytest", specifier = ">=8.3.5" }]
+dev = [
+    { name = "pex", specifier = ">=2.40.2" },
+    { name = "pytest", specifier = ">=8.3.5" },
+]
 
 [[package]]
 name = "packaging"
@@ -74,6 +78,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/a1/d4/1fc4078c65507b51b96ca8f8c3ba19e6a61c8253c72794544580a7b6c24d/packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f", size = 165727 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/12/38679034af332785aac8774540895e234f4d07f7545804097de4b666afd8/packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484", size = 66469 },
+]
+
+[[package]]
+name = "pex"
+version = "2.40.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/c0/ea238aec8b6427c46e42f9ce5e441a1d14d95d57db558ce6cba5224bce0e/pex-2.40.2.tar.gz", hash = "sha256:e7cf40c75f293651519b5e275e7971f3e88f5998547a1b00386845c517b845df", size = 4921528 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/f8/1e5c1ed014b270640c8677e12cec6bb7e90138e0d2213a9ba542f98d4a3b/pex-2.40.2-py2.py3-none-any.whl", hash = "sha256:587a2f35c44efaa92d1de4e825bc80d222f339a73f4fab1d1f3c4cdf35a063d0", size = 3834098 },
 ]
 
 [[package]]

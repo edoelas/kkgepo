@@ -37,6 +37,21 @@ def print_help():
     return f"printf \"{help_str}\\n\""
 
 def create_command(args: list):
+    """
+    Generates a kubectl shell command from a list of alias arguments.
+    Args:
+        args (list): List of command-line arguments. The second argument (args[1]) is expected to be a string of alias codes.
+    Returns:
+        str: The constructed kubectl command as a string, or an error/help message if the input is invalid.
+    Behavior:
+        - If the number of arguments is not 2, calls and returns the result of print_help().
+        - Splits the alias string into 2-character chunks.
+        - For each chunk:
+            - If it matches a known command, flag, or resource, appends the corresponding kubectl syntax.
+            - If it is 'ff', inserts a command to select a resource using fzf (defaults to 'pod' if no resource alias is found).
+            - If the chunk is not recognized, returns an error message.
+    """
+
     if len(args) != 2:
         return print_help()
     

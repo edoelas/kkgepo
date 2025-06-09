@@ -18,7 +18,7 @@ flags:
   ow: -o=wide
   oj: -o=json
 resources:
-  no: nodes
+  "no": nodes
   ns: namespaces
   dp: deployment
   st: statefulset
