@@ -1,0 +1,28 @@
+name: Build kk.pex
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install uv pex
+      - name: Build kk.pex
+        run: |
+          uv pip compile pyproject.toml > requirements.txt
+          pex -r requirements.txt -o kk.pex --exe main.py
+      - name: Upload kk.pex
+        uses: actions/upload-artifact@v3
+        with:
+          name: kk-pex
+          path: kk.pex
