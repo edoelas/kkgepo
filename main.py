@@ -2,30 +2,25 @@ import os
 import sys
 from pathlib import Path
 import subprocess
+from yaml import safe_load
 
-try:
-    from yaml import safe_load
-except Exception:  # PyYAML not available
-    from src.yaml_fallback import safe_load
-
+ALIASES = {"commands": {}, "flags": {}, "resources": {}}
 _aliases_env = os.environ.get("KKGEPO_ALIASES")
 if not _aliases_env:
     print("KKGEPO_ALIASES environment variable is not set", file=sys.stderr)
-    _ALIASES = {"commands": {}, "flags": {}, "resources": {}}
 else:
-    ALIASES_FILE = Path(_aliases_env).expanduser()
+    aliases_file = Path(_aliases_env).expanduser()
     try:
-        with open(ALIASES_FILE, "r") as f:
-            _ALIASES = safe_load(f)
+        with open(aliases_file, "r") as f:
+            ALIASES = safe_load(f)
     except FileNotFoundError:
-        print(f"Alias file not found: {ALIASES_FILE}", file=sys.stderr)
-        _ALIASES = {"commands": {}, "flags": {}, "resources": {}}
+        print(f"Alias file not found: {aliases_file}", file=sys.stderr)
 
-commands = _ALIASES.get("commands", {})
+commands = ALIASES.get("commands", {})
 
-flags = _ALIASES.get("flags", {})
+flags = ALIASES.get("flags", {})
 
-resources = _ALIASES.get("resources", {})
+resources = ALIASES.get("resources", {})
 
 def print_help():
     groups = {

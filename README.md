@@ -39,7 +39,7 @@ kkgepo/
 ├── aliases.yaml      # default alias definitions
 ├── kubealiasrc       # shell helper functions
 ├── build.sh          # build script producing kk.pex
-├── src/              # library modules (e.g. yaml_fallback)
+├── src/              # library modules 
 └── tests/            # unit tests
 ```
 
