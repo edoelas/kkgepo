@@ -1,30 +1,41 @@
+"""Command line interface for the ``kkgepo`` alias generator."""
+
+from __future__ import annotations
+
 import os
 import sys
 from pathlib import Path
 import subprocess
 from yaml import safe_load
 
-ALIASES = {"commands": {}, "flags": {}, "resources": {}}
-_aliases_env = os.environ.get("KKGEPO_ALIASES")
-if not _aliases_env:
-    print("KKGEPO_ALIASES environment variable is not set", file=sys.stderr)
-else:
-    aliases_file = Path(_aliases_env).expanduser()
+DEFAULT_ALIASES = {"commands": {}, "flags": {}, "resources": {}}
+
+
+def _load_aliases_from_env() -> dict[str, dict[str, str]]:
+    """Return alias definitions from the ``KKGEPO_ALIASES`` file."""
+
+    path = os.environ.get("KKGEPO_ALIASES")
+    if not path:
+        print("KKGEPO_ALIASES environment variable is not set", file=sys.stderr)
+        return DEFAULT_ALIASES
+
+    path = Path(path).expanduser()
     try:
-        with open(aliases_file, "r") as f:
-            ALIASES = safe_load(f)
+        with path.open("r") as f:
+            return safe_load(f)
     except FileNotFoundError:
-        print(f"Alias file not found: {aliases_file}", file=sys.stderr)
+        print(f"Alias file not found: {path}", file=sys.stderr)
+        return DEFAULT_ALIASES
 
+
+ALIASES = _load_aliases_from_env()
 commands = ALIASES.get("commands", {})
-
 flags = ALIASES.get("flags", {})
-
 resources = ALIASES.get("resources", {})
 
 
 def print_help() -> None:
-    """Print the help message describing available aliases."""
+    """Display the supported aliases grouped by type."""
 
     groups = {
         "Resources": resources,
@@ -33,66 +44,50 @@ def print_help() -> None:
         "\u02d6\u2726\xb7\u02f3MAGIC\u02da\xb7\u2726\u02d6": {"ff": "fzf over resources"},
     }
 
-    help_str = (
+    print(
         "Usage:\n"
         "       main.py [-p] <alias1><alias2>... (do not use spaces between aliases)\n\n"
         "Use -p or --print to display the kubectl command without executing it.\n"
     )
-    for group_name, mapping in groups.items():
-        help_str += f"\n{group_name}:\n"
+    for name, mapping in groups.items():
+        print(f"\n{name}:")
         for code, value in mapping.items():
-            help_str += f"\t{code} => {value}\n"
+            print(f"\t{code} => {value}")
 
-    print(help_str)
+def _split_aliases(code: str) -> list[str]:
+    return [code[i : i + 2] for i in range(0, len(code), 2)]
 
-def create_command(args: list):
-    """
-    Generates a kubectl shell command from a list of alias arguments.
-    Args:
-        args (list): List of command-line arguments. The second argument (args[1]) is expected to be a string of alias codes.
-    Returns:
-        str | None: The constructed kubectl command as a string, or ``None`` if a
-        help or error message was printed.
-    Behavior:
-        - If the number of arguments is not 2, ``print_help`` is called and ``None``
-          is returned.
-        - Splits the alias string into 2-character chunks.
-        - For each chunk:
-            - If it matches a known command, flag, or resource, appends the corresponding kubectl syntax.
-            - If it is 'ff', inserts a command to select a resource using fzf
-              (defaults to 'pod' if no resource alias is found).
-            - If the chunk is not recognized, an error message is printed and
-              ``None`` is returned.
-    """
+
+def create_command(args: list[str]) -> str | None:
+    """Return the kubectl command represented by ``args`` or ``None``."""
 
     if len(args) != 2:
         print_help()
         return None
-    
-    alias = args[1]
-    alias = [alias[i:i+2] for i in range(0, len(alias), 2)]
 
+    tokens = _split_aliases(args[1])
     subs = {**commands, **flags, **resources}
-    command: str = 'kubectl'
-    fzftab_cmd = os.environ.get(
+    fzf_cmd = os.environ.get(
         "FZFTAB_CMD",
         "fzf --height=13 --border --reverse --pointer '>' --header-lines=1 --color 'header:reverse'",
     )
-    for a in alias:
-        if a in subs:  # adds command, flag, or resource to shell command
-            command += f" {subs[a]}"
 
-        elif a == 'ff':  # fzf over resources. Default to pod.
-            alias_resource = next((res for res in alias if res in resources), 'po')
-            command += (
-                f" $(kubectl get {subs[alias_resource]} | {fzftab_cmd} | awk '{{print $1}}')"
+    parts = ["kubectl"]
+    for token in tokens:
+        if token == "ff":
+            res = next((t for t in tokens if t in resources), "po")
+            parts.append(
+                f"$(kubectl get {subs[res]} | {fzf_cmd} | awk '{{print $1}}')"
             )
-
-        else:  # alias not found
-            print(f"Alias not found: '{a}'. Call the script without arguments for help.")
+        elif token in subs:
+            parts.append(subs[token])
+        else:
+            print(
+                f"Alias not found: '{token}'. Call the script without arguments for help."
+            )
             return None
 
-    return command
+    return " ".join(parts)
 
 
 def main(argv: list[str] | None = None) -> None:
