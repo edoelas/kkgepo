@@ -5,89 +5,44 @@ alias fzftab="fzflist --header-lines=1 --color 'header:reverse'"
 
 export KUBECONFIG=$(find ~/.kube -type f -name 'config_*' | tr '\n' ':')
 
-if [ -n "$BASH_VERSION" ]; then # BASH
-    
-    # bash does not work properly
-    preexec() {
-        if [[ $1 == kk* ]]; then
-
-            local rest_elements=${1#*' '};  [[ "$1" == *" "* ]] || rest_elements=""; # Extract the trailing commands
-            local command=${1:2} # Delete the first two characters 'kk'
-            command=${command%% *} # Delete trailing commands
-
-            eval $(python ~/kkgepo/main.py $command) ${rest_elements} ;
-            return 1
-        fi
-    }
-    trap 'preexec $BASH_COMMAND' DEBUG # alternativa a bash-preexec
-    shopt -s extdebug # avoid printing command not found
-
-elif [ -n "$ZSH_VERSION" ]; then # ZSH
-
-    kk-accept-line () { # funcion encargada de procesar el comando antes de ejecutarlo
-        if [[ "$BUFFER" == "kk"* ]]; then
-
-            local rest_elements=${BUFFER#*' '};  [[ "$BUFFER" == *" "* ]] || rest_elements=""; # Extract the trailing commands
-            local command=${BUFFER:2} # Delete the first two characters 'kk'
-            command=${command%% *} # Delete trailing commands
-
-            case $command in
-            "co")   BUFFER="ksetco";; # set context
-            "ns")   BUFFER="ksetns";; # set namespace
-            "pf")   BUFFER="k_port_forward";; # port forward
-            "cd")   BUFFER="k_cd";; # cd into k8s projects
-            "he")   BUFFER="k_helmfile_sync";; # helmfile sync
-            "lo")   BUFFER="k_logs";; # logs
-            *)      BUFFER="$(python ~/kkgepo/main.py $command) ${rest_elements}";; # get alias
-            esac
-        fi
-
-        zle .accept-line # Check if line is accepeted after processing
-    }
-
-    zle -N accept-line kk-accept-line # Add the function to the accept-line widget
-
-fi
-
-# La versión de arriba mola mas, pero si no se quiere usar preexec, se puede usar esta
-function ku(){
-    eval $(python ~/kkgepo/main.py $1) ${@:2} ;
-    # echo $(python ~/main.py $1);
+# Wrapper around the Python CLI
+function kk(){
+    python ~/kkgepo/main.py "$@"
 }
 
 # namespace get and set
-function k_set_ns() { kubectl config set-context --current --namespace="$1";}
-function k_get_ns() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
+function kk_set_ns() { kubectl config set-context --current --namespace="$1"; }
+function kk_get_ns() { kubectl config view --minify --output 'jsonpath={..namespace}' | tr -d "\n"; echo; } # if empty, it's in default namespace
 
 # set namespace fzf
-function ksetns() {
-    local current_ns=$(k_get_ns)
-    local new_ns=$(kubectl get ns --no-headers | fzflist --header="current: $current_ns" | awk '{print $1}' )
-    k_set_ns $new_ns
+function kk_select_ns() {
+    local current_ns=$(kk_get_ns)
+    local new_ns=$(kubectl get ns --no-headers | fzflist --header="current: $current_ns" | awk '{print $1}')
+    kk_set_ns "$new_ns"
 }
 
 # set context fzf
-function ksetco(){
+function kk_select_context(){
     local current_context=$(kubectl config current-context)
     local context=$(kubectl config get-contexts --no-headers | fzflist --header="current: $current_context" | awk '{print $1}')
-    kubectl config use-context $context
+    kubectl config use-context "$context"
 }
 
 # forward port fzf
-function k_port_forward(){
+function kk_port_forward(){
     local svc=$(kubectl get svc | fzftab | awk '{print $1}')
     local origin_port=$(kubectl get svc --no-headers $svc -o='jsonpath={.spec.ports}' | jq -r '(.[] | [.port, .protocol, .name]) | @tsv' | fzflist --select-1 | awk '{print $1}')
     kubectl port-forward service/$svc :$origin_port
 }
 
 # cd into git projects
-function k_cd(){
+function kk_cd(){
     local folder=$(ls $K8S_HOME | tr ' ' '\n' | fzflist)
     cd $K8S_HOME/$folder
 }
 
 # helmfile sync
-function k_helmfile_sync(){
+function kk_helmfile_sync(){
     if ! helmfile status 2>&1; then
         return 1
     fi
@@ -96,11 +51,11 @@ function k_helmfile_sync(){
 }
 
 # see nice logs with fzf, bat and yq
-function format_log(){
+function kk_format_log(){
     echo $1 | yq -P | bat --color=always --style=numbers --line-range=:500 --language yaml
 }
 
-function k_logs(){
+function kk_logs(){
     # Add case when it is not json
     local pod=$(kubectl get pods | fzftab | awk '{print $1}')
     kubectl logs $pod | fzf --ansi --tail 100000 --tac --no-sort --exact --wrap --highlight-line \
