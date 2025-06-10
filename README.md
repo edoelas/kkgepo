@@ -70,7 +70,7 @@ uv pip install -e ".[develop]"
 **Help**:
 ```
 Usage:
-        main.py <alias1> <alias2> ...
+        main.py [-p] <alias1> <alias2> ...
 
 The generated kubectl command is executed automatically. Use ``--print`` (or
 ``-p``) to display the command without executing it.

@@ -43,17 +43,26 @@ class TestKubealias(unittest.TestCase):
                 )
 
     def test_help_shown_when_no_alias_provided(self) -> None:
-        """When no alias is given, the help message should be returned."""
-        result = main.create_command(["prog"])
-        self.assertIn("Usage:", result)
+        """When no alias is given, the help message should be printed."""
+        from io import StringIO
+        import contextlib
+
+        out = StringIO()
+        with contextlib.redirect_stdout(out):
+            result = main.create_command(["prog"])
+        self.assertIsNone(result)
+        self.assertIn("Usage:", out.getvalue())
 
     def test_unknown_alias_returns_message(self) -> None:
-        """An unknown alias should return an informative error message."""
-        result = main.create_command(["prog", "gezz"])
-        self.assertEqual(
-            result,
-            "echo \"Alias not found: 'zz'. Call the script without arguments for help.\"",
-        )
+        """An unknown alias should print an informative error message."""
+        from io import StringIO
+        import contextlib
+
+        out = StringIO()
+        with contextlib.redirect_stdout(out):
+            result = main.create_command(["prog", "gezz"])
+        self.assertIsNone(result)
+        self.assertIn("Alias not found", out.getvalue())
 
     def test_ff_alias_builds_fzf_command(self) -> None:
         """The special ``ff`` alias should inject the fzf command snippet."""

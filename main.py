@@ -22,21 +22,28 @@ flags = ALIASES.get("flags", {})
 
 resources = ALIASES.get("resources", {})
 
-def print_help():
+
+def print_help() -> None:
+    """Print the help message describing available aliases."""
+
     groups = {
-        'Resources': resources,
-        'Commands': commands,
-        'Flags': flags,
-        '˖✦·˳MAGIC˚✦˖': {'ff': 'fzf over resources'},
+        "Resources": resources,
+        "Commands": commands,
+        "Flags": flags,
+        "\u02d6\u2726\xb7\u02f3MAGIC\u02da\xb7\u2726\u02d6": {"ff": "fzf over resources"},
     }
 
-    help_str = "Usage:\\n\\tmain.py <alias1><alias2>... (do not use spaces between aliases)\\n"
-    for k, v in groups.items():
-        help_str += f"\\n{k}:\\n"
-        for k, v in v.items():
-            help_str += f"\\t{k} => {v}\\n"
+    help_str = (
+        "Usage:\n"
+        "       main.py [-p] <alias1><alias2>... (do not use spaces between aliases)\n\n"
+        "Use -p or --print to display the kubectl command without executing it.\n"
+    )
+    for group_name, mapping in groups.items():
+        help_str += f"\n{group_name}:\n"
+        for code, value in mapping.items():
+            help_str += f"\t{code} => {value}\n"
 
-    return f"printf \"{help_str}\\n\""
+    print(help_str)
 
 def create_command(args: list):
     """
@@ -44,18 +51,23 @@ def create_command(args: list):
     Args:
         args (list): List of command-line arguments. The second argument (args[1]) is expected to be a string of alias codes.
     Returns:
-        str: The constructed kubectl command as a string, or an error/help message if the input is invalid.
+        str | None: The constructed kubectl command as a string, or ``None`` if a
+        help or error message was printed.
     Behavior:
-        - If the number of arguments is not 2, calls and returns the result of print_help().
+        - If the number of arguments is not 2, ``print_help`` is called and ``None``
+          is returned.
         - Splits the alias string into 2-character chunks.
         - For each chunk:
             - If it matches a known command, flag, or resource, appends the corresponding kubectl syntax.
-            - If it is 'ff', inserts a command to select a resource using fzf (defaults to 'pod' if no resource alias is found).
-            - If the chunk is not recognized, returns an error message.
+            - If it is 'ff', inserts a command to select a resource using fzf
+              (defaults to 'pod' if no resource alias is found).
+            - If the chunk is not recognized, an error message is printed and
+              ``None`` is returned.
     """
 
     if len(args) != 2:
-        return print_help()
+        print_help()
+        return None
     
     alias = args[1]
     alias = [alias[i:i+2] for i in range(0, len(alias), 2)]
@@ -76,8 +88,9 @@ def create_command(args: list):
                 f" $(kubectl get {subs[alias_resource]} | {fzftab_cmd} | awk '{{print $1}}')"
             )
 
-        else: # alias not found
-            return f"echo \"Alias not found: '{a}'. Call the script without arguments for help.\""
+        else:  # alias not found
+            print(f"Alias not found: '{a}'. Call the script without arguments for help.")
+            return None
 
     return command
 
@@ -96,6 +109,9 @@ def main(argv: list[str] | None = None) -> None:
         argv = [argv[0]] + argv[2:]
 
     cmd = create_command(argv)
+    if cmd is None:
+        return
+
     if print_only:
         print(cmd)
     else:
